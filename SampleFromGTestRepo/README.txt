@@ -1,0 +1,1 @@
+These sample files are available in the GitHub repository for Google Test. Syntax and usage of GTest can be seen here.
