@@ -51,7 +51,7 @@ Reports can be found at ddad/bazel-bin/application/adp/cas/components/FasCwBas/t
 Open "index.html"
 NOTE: index.html gets overwritten during every single Bazel coverage command.
 
-
+(Coverage Report is generated because certain .bzl files were loaded to the BUILD file. Coverage Report as such for Windows is not yet developed using simple "Bazel coverage" command.)
 
 
 
