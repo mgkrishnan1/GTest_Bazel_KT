@@ -1,0 +1,202 @@
+//gtest_cunit_wrapper
+//File present in ddad/platform/cas/int/tests/common/includes
+//Example macros
+
+#define ASSERT_EQ(x,y) CU_ASSERT ((x) == (y))
+#define EXPECT_EQ(x,y) CU_ASSERT ((x) == (y))
+#define EXPECT_FLOAT_EQ(x, y) CU_ASSERT_DOUBLE_EQUAL (x, y,0.1f)
+
+#define EXPECT_TRUE (X) CU_ASSERT_TRUE (X)
+#define EXPECT_FALSE (X) CU_ASSERT_FALSE (X)
+
+#define EXPECT_NEAR (x,y,z) CU_ASSERT_DOUBLE_EQUAL (x, y, z)
+#define EXPECT_NE (X,Y) CU_ASSERT_NOT_EQUAL (X, Y)
+#define EXPECT_GE (X,Y) CU_ASSERT_GREATER_OR_EQUAL (X,Y)
+#define ASSERT_LE (X,Y) CU_ASSERT_LESS_OR_EQUAL (X,Y)
+
+#define EXPECT_DOUBLE_EQ (x,y) CU_ASSERT_DOUBLE_EQUAL (x, y,0.1f)
+
+
+
+
+
+
+
+
+
+//Ticket 3065
+gtest: all relevant gtest features of FasOcHi to be mapped with CUnit test functions
+To do: Mapp all EXPECT_ gtest features with CUnit functions.
+
+
+
+//Ticket 3076
+GTest to CUnit for FasCwbas
+
+
+
+//Ticket 3108
+gtest: Compare code coverage results from gtest/cunit
+
+
+
+gtest is not working using Windriver.
+gtest and CUnit works on gcc.
+
+Bazel coverage //application/adp/cas/components/FasCwBas/test:FasCwbas_Spec_coverage  #for gtest
+
+Bazel coverage //application/adp/cas/components/FasCwBas/test:FasCwbas_Spec_CUnit_coverage  #for CUnit
+
+Reports can be found at ddad/bazel-bin/application/adp/cas/components/FasCwBas/test/HTML_REPORTS
+Open "index.html"
+NOTE: index.html gets overwritten during every single Bazel coverage command.
+
+
+
+
+
+
+//CPP files available at ddad/application/adp/cas/components/FasCwbas/test
+
+#ifdef __CUNIT_FRAMEWORK					//This allows for both wrapper and gtest files to be used.
+#include "gtest_cunit_wrapper.h"
+#else
+#include <gtest/gtest.h>
+#endif
+
+
+#ifdef __CUNIT_FRAMEWORK
+void ComponentFasCwbas__GivenAebRequestWithDriverpedalGradient_ExpectWarningAndBreakingAborted(void);
+//Similarly other functions are declared here.
+
+//Correspodning Test
+TEST(ComponentFasCwbas, GivenAebRequestWithDriverpedalGradient_ExpectWarningAndBreakingAborted)
+{
+.
+.
+.
+}
+
+
+//TESTCASE ARRAY
+BMW_BEGIN_TESTCASE_ARRAY(FasCwbasAcceptanceAbort_specCUnit)
+	BMW_REGISTER_TESTCASE(ComponentFasCwbas__GivenAebRequestWithDriverpedalGradient_ExpectWarningAndBreakingAborted)
+//Similarly other TESTCASE	
+
+
+
+
+
+
+
+
+
+
+//TestStep.cpp
+//available at ddad/application/adp/cas/components/FasCwbas/test
+//Various BMW_BEGIN_TESTCASE_ARRAY declared in cpp files are used inside TestStep.cpp
+
+#ifdef __CUNIT_FRAMEWORK
+#include "gtest_cunit_wrapper.h"
+#else
+#include <gtest/gtest.h>
+#endif
+
+
+
+
+
+//Bazel (From email exchange)
+
+Platform branch:
+sage_gtest_cunit_stable21
+
+FasOchi: branch: ddad/application/adp (sage_bmw_gtest_adp_fasochi_stable21)
+Bazel test //application/adp/cas/components/FasOchi/test:FasOchiComponent_Spec_CUnitFramework
+Bazel test //application/adp/cas/components/FasOchi/test:FasOchiUnit_Spec_CUnitFramework
+Bazel test //application/adp/cas/components/FasOchi/test:FasOchiSnd_Spec_CUnitFramework
+
+
+FasCwBas: /ddad/application/adp (sage_bmw_gtest_adp_fascwbas_stable21)
+Bazel test //application/adp/cas/components/FasCwBas/test:FasCwbas_Spec_CUnitFramework
+
+
+
+
+
+
+
+
+
+
+//BUILD available at ddad/application/adp/cas/components/FasCwbas/test
+
+@load("//platform/bazel/rules/conditional:test.bzl", "conditional_test_adapter")
+@load("//platform/tools/ctcpp_coverage:ctcpp_coverage.bzl", "ctcpp_coverage") #For local coverage purpose only.
+@load("//application/adp/bazel/tracing:tracing_aspect.bzl", "tracing")
+
+
+conditional_test_adapter(
+	name = "FasCwbas_Spec",
+	testonly = True,
+	srcs = [ ]  #All required CPP files are mentioned here.
+	condition = ''//application/adp/cas/components/FasCwbas:FasCwbasScalDefault_hash_matching",
+	tags = [
+		"cas",
+		"host-only''
+			],
+	deps = [
+		":RteStubs",
+		"//application/adp/cas/components/FasCwbas:FasCwbasScalDefaultTest",
+		"@googletest//:gtest_main",
+			],
+)
+
+
+conditional_test_adapter(
+	name = "FasCwbas_Spec_CUnitFramework",
+	testonly = True,
+	srcs = [ ]  #All required CPP files are mentioned here.
+	condition = ''//application/adp/cas/components/FasCwbas:FasCwbasScalDefault_hash_matching",
+	tags = [
+		"cas",
+		"host-only''
+			],
+	deps = [
+		":RteStubs",
+		"//application/adp/cas/components/FasCwbas:FasCwbasScalDefaultTest",
+		"//platform/cas/int/tests/common:test_common",  #wrapper file path.
+			],
+			
+	defines=["__CUNIT_FRAMEWORK"]
+)
+
+ctcpp_coverage(
+		name = "FasCwbas_Spec_coverage",
+		testonly = True,
+		tags = ["manual"],
+		targets = [
+			":FasCwbas_Spec"
+		],
+)
+
+
+ctcpp_coverage(
+		name = "FasCwbas_Spec_CUnit_coverage",
+		testonly = True,
+		tags = ["manual"],
+		targets = [
+			":FasCwbas_Spec_CUnitFramework"
+		],
+)
+
+
+
+
+
+
+
+FascdiBUILD
+
+Here also we have ctcpp_coverage with multiple targets. But report can only be generated for a single target at a time. So comment out the other targets.
+Example *:FasCdiComponent_Spec
